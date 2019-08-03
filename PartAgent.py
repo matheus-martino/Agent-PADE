@@ -4,7 +4,8 @@ from pade.behaviours.types import OneShotBehaviour, CyclicBehaviour
 from pade.core.agent import Agent
 from pade.misc.utility import display, start_loop
 from pade.acl.filters import Filter
-
+from GetIP import get_ip
+import sys
 
 # Agent
 class PartAgent(Agent):
@@ -17,9 +18,9 @@ class SendMessage(OneShotBehaviour):
 		
 		message = ACLMessage(ACLMessage.REQUEST)
 		message.add_receiver(AID('DF'))
-		message.set_content(sys.argv[2])
+		message.set_content(sys.argv[3])
 		self.agent.send(message)
-		display(self.agent, 'I sent REQUEST to DF: %s' %sys.argv[2])
+		display(self.agent, 'I sent REQUEST to DF: %s' %sys.argv[3])
         
 		f = Filter()
 		f.set_performative(ACLMessage.INFORM_IF) 
@@ -35,11 +36,15 @@ class SendMessage(OneShotBehaviour):
 		message.add_receiver(AID('DF'))
 		message.set_content('morri')
 		self.agent.send(message)
-		display(self.agent, 'I sent morri to receiver.')
+		display(self.agent, 'I sent morri to DF.')
 		self.wait(5)
 		return True
 
 if __name__ == '__main__':
 	agents = list()
-	agents.append(PartAgent('Peça1'))
+	
+	# Encontra o IP automaticamente
+	localIP = get_ip()
+	agents.append(PartAgent(sys.argv[2] + '@' + localIP + ':4000'))
+	
 	start_loop(agents)
