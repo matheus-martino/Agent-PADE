@@ -2,16 +2,15 @@ from pade.acl.aid import AID
 from pade.acl.messages import ACLMessage
 from pade.acl.filters import Filter
 from pade.behaviours.types import CyclicBehaviour, OneShotBehaviour
-from pade.core.agent import Agent, AgentFactory
+from pade.core.agent import Agent
 from pade.misc.utility import display_message, start_loop
-from pade.core.new_ams import ComportVerifyConnTimed
-
-
+from GetIP import get_ip
 
 class Directory(Agent):
 	def setup(self):
 		# Adding behaviours to this agent
-		self.add_behaviour(Dfacility(self))  
+		reg1 = Registro()
+		self.add_behaviour(Dfacility(self, reg1)) 
 
 class Registro:
 	def __init__(self):
@@ -44,27 +43,31 @@ class Registro:
 		if self.kill is not None:		
 			del self.posicao[self.kill]        
 
-reg1 = Registro()
-
 class Dfacility(CyclicBehaviour):
+	def __init__(self, agent, reg1):
+		super().__init__(agent)
+		self.reg1=reg1
+        
 	def action(self):
-		self.wait(1)
-		print(reg1.posicao)
+		print(self.reg1.posicao)
 		sublist = []
 		f = Filter()
-		f.set_performative(ACLMessage.INFORM) 
+		f.set_performative(ACLMessage.INFORM)
+		m = Filter()
+		m.set_performative(ACLMessage.REQUEST)
 		message = self.read()
+        
 		if f.filter(message):   
 			if message.content == 'morri':
-				reg1.desregistrar(message.sender.getLocalName())
-				print(reg1.posicao)
+				self.reg1.desregistrar(message.sender.getLocalName())
+				print(self.reg1.posicao)
 								
 			else:
 				sublist.append(message.sender.getLocalName())
 				sublist.extend(message.content.split(":"))
         
-				reg1.registrar(sublist)
-				print(reg1.posicao)
+				self.reg1.registrar(sublist)
+				print(self.reg1.posicao)
 		
 				reply = message.create_reply()
 				reply.set_performative(ACLMessage.INFORM_IF)
@@ -76,9 +79,27 @@ class Dfacility(CyclicBehaviour):
                 # Sending the message
 				self.agent.send(reply)
 				#print(resultado)
+                
+		if m.filter(message):       
+			sublist = self.reg1.procurar(message.content)
+			outralista=[]
+            
+			for maquinas in sublist:
+				outralista.append(self.reg1.posicao[maquinas][0] + ':')
 
-
+			s = ''.join(outralista)
+			
+			print(s)
+            
+			reply = message.create_reply()
+			reply.set_performative(ACLMessage.INFORM_IF)
+			reply.set_content(s)
+            
 if __name__ == '__main__':
     agents = list()
-    agents.append(Directory('DF'))
+	
+	# Encontra o IP automaticamente
+    localIP = get_ip()
+    agents.append(Directory('DF@' + localIP + ':2000'))
+	
     start_loop(agents)
