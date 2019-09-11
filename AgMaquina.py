@@ -1,4 +1,3 @@
-#erro de lógica, corrigido no notebook (irei trocar amanhã)
 from pade.acl.aid import AID
 from pade.acl.messages import ACLMessage
 from pade.acl.filters import Filter
@@ -15,13 +14,16 @@ class maquina(Agent):
 
 
 class maquina1(CyclicBehaviour):
-	def action(self):
-    
-		negociando = 0
-		primeira = 0
+	def __init__(self, agent):
+		super().__init__(agent)
         
-		run = primeira 
-		estado = negociando
+		self.primeira=0
+		self.negociando=0
+        
+		self.run = self.primeira 
+		self.estado = self.negociando
+
+	def action(self):  
         
 		cfp = Filter()
 		cfp.set_performative(ACLMessage.CFP)
@@ -29,7 +31,7 @@ class maquina1(CyclicBehaviour):
 		accept.set_performative(ACLMessage.ACCEPT_PROPOSAL)        
 		# Preparando mensagem para cadastro DF
         
-		if run == primeira:     
+		if self.run == self.primeira:     
 		    message = ACLMessage(ACLMessage.INFORM)
 		    message.add_receiver(AID('DF'))
 		    message.set_content('Dispensar Chassi')
@@ -39,13 +41,13 @@ class maquina1(CyclicBehaviour):
 		    message = self.read()
         
 		    if message.content == 'OK':
-		        run = 1
+		        self.run = 1
 		        display(self.agent, 'Registrado')
 
                
 		message = self.read()
         
-		if estado == negociando:
+		if self.estado == self.negociando:
         
 		    if cfp.filter(message):
         
@@ -67,7 +69,7 @@ class maquina1(CyclicBehaviour):
             
             if message.content == 'Dispensar Chassi':
             
-		        estado = 1            
+		        self.estado = 1            
 		        agente = []
 		        agente.append(message.sender.getLocalName())
 		        agente.append(message.content)
@@ -89,7 +91,7 @@ class maquina1(CyclicBehaviour):
 		        reply.set_content('pronto')
 		        self.agent.send(reply)
                 
-		        estado = negociando
+		        self.estado = self.negociando
                 
 	def tAuxiliar(self, kill):
         
