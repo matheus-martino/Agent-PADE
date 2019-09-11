@@ -1,0 +1,27 @@
+{ 
+    "agent_files": [
+        "PeriodicSender.py"
+    ],
+    "port": 40000,
+    "num": 1,
+    "pade_ams": {
+        "launch": false,
+        "host": "192.168.0.5",
+        "port": 8000
+    },
+    "pade_web": {
+        "active": false,
+        "host": "192.168.0.5",
+        "port": 5000
+    },
+    "pade_sniffer": {
+        "active": false,
+        "host": "192.168.0.5",
+        "port": 8001
+    },
+    "session": {
+        "username": "pade_user",
+        "email": "pade_user@pade.com",
+        "password": "12345"    
+    }
+}
