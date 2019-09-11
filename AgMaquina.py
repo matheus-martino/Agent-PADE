@@ -1,3 +1,4 @@
+#erro de lógica, corrigido no notebook (irei trocar amanhã)
 from pade.acl.aid import AID
 from pade.acl.messages import ACLMessage
 from pade.acl.filters import Filter
