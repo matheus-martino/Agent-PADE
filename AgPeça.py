@@ -22,20 +22,28 @@ class Registro:
 				self.busca.append(idx)
 		if self.busca is not None:
 			return self.busca
-		return -1
+		return None
         
-	def desregistrar(self, nomeAgente):
+	def desregistrar(self, nomeServ):
 		self.kill = None
 		i=-1
-		print(nomeAgente)
+		#print(nomeServ)
 		for idx, list in enumerate(self.posicao):
-			if nomeAgente in list:
+			if nomeServ in list:
 				i=i+1
 				self.kill = idx
-				print(self.kill)                
+		#		print(self.kill)                
 		if self.kill is not None:		
-			del self.posicao[self.kill]        
-      
+			del self.posicao[self.kill] 
+            
+	def atualizar(self):
+		self.atualizacao=[]
+		for idx, list in enumerate(self.posicao):
+			if '1' in list:
+				self.posicao[idx][1]='0'
+			else:
+				pass
+			
 
 class AgPeca(Agent):
 	def setup(self):
@@ -48,15 +56,29 @@ class Peca(CyclicBehaviour):
 		super().__init__(agent)
 		self.reg1=reg1
 		sublist=[]
+         
 		sublist.extend(['Dispensar Chassi','0'])
-		self.reg1.registrar(sublist)        
+		self.reg1.registrar(sublist)
+		del sublist[1]
+		del sublist[0]
+		sublist.extend(['Pintar','1'])
+		self.reg1.registrar(sublist)             
         
 	def action(self):
 		sublist=[]
 		sublist = self.reg1.procurar('0')
-		for processos in sublist:
-			print(self.reg1.posicao[processos][0])     
-		self.wait(10)
+		print(self.reg1.posicao)
+		print(sublist)
+		if len(sublist)!=0:
+			for processos in sublist:
+				print(self.reg1.posicao[processos][0])
+				self.reg1.desregistrar(self.reg1.posicao[processos][0])
+				self.reg1.atualizar()                
+			self.wait(10)
+		else:
+			print('vazio')
+			self.wait(10)
+		self.reg1.atualizar()
         
 
 if __name__ == '__main__':
