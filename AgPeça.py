@@ -47,14 +47,16 @@ class Peca(CyclicBehaviour):
 	def __init__(self, agent, reg1):
 		super().__init__(agent)
 		self.reg1=reg1
-        
-        i=1
-        
-            
+		sublist=[]
+		sublist.extend(['Dispensar Chassi','0'])
+		self.reg1.registrar(sublist)        
         
 	def action(self):
-        
-        
+		sublist=[]
+		sublist = self.reg1.procurar('0')
+		for processos in sublist:
+			print(self.reg1.posicao[processos][0])     
+		self.wait(10)
         
 
 if __name__ == '__main__':
