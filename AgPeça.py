@@ -4,6 +4,7 @@ from pade.acl.filters import Filter
 from pade.behaviours.types import CyclicBehaviour, OneShotBehaviour
 from pade.core.agent import Agent
 from pade.misc.utility import display, start_loop
+import sys
 
 class Registro:
 	def __init__(self):
