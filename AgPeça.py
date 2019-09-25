@@ -53,12 +53,20 @@ class Peca(CyclicBehaviour):
 		super().__init__(agent)
 		self.reg1=reg1
 		sublist=[]
-		sublist.append(['Dispensar Chassi',0])
-		sublist.append(['Montar roda',0])
-		sublist.append(['Batman',0])
-		sublist.append(['Pintar',1])
-		sublist.append(['Furar',1])
-		sublist.append(['Entregar',2])
+		inputList = []
+		
+		#sublist.append(['Dispensar Chassi',0])
+		#sublist.append(['Montar roda',0])
+		#sublist.append(['Batman',0])
+		#sublist.append(['Pintar',1])
+		#sublist.append(['Furar',1])
+		#sublist.append(['Entregar',2])
+		inputList = sys.argv[3].split(":") #Exemplo: 'Dispensar Chassi:0:Montar Roda:1:Furar:1:Entregar:2'
+		for i in range(0, len(inputList), 2):
+			chunk = inputList[i:i + 2]
+			chunk[1] = int(chunk[1])
+			sublist.append(chunk)
+			
 		tamanho_sublist=len(sublist)
 		for i in range(tamanho_sublist):
 			self.reg1.registrar(sublist[i]) 
