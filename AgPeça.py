@@ -39,10 +39,7 @@ class Registro:
 	def atualizar(self):
 		self.atualizacao=[]
 		for idx, list in enumerate(self.posicao):
-			if '1' in list:
-				self.posicao[idx][1]='0'
-			else:
-				pass
+			self.posicao[idx][1]=(self.posicao[idx][1])-1
 			
 
 class AgPeca(Agent):
@@ -56,29 +53,44 @@ class Peca(CyclicBehaviour):
 		super().__init__(agent)
 		self.reg1=reg1
 		sublist=[]
-         
-		sublist.extend(['Dispensar Chassi','0'])
-		self.reg1.registrar(sublist)
-		del sublist[1]
-		del sublist[0]
-		sublist.extend(['Pintar','1'])
-		self.reg1.registrar(sublist)             
+		sublist.append(['Dispensar Chassi',0])
+		sublist.append(['Montar roda',0])
+		sublist.append(['Batman',0])
+		sublist.append(['Pintar',1])
+		sublist.append(['Furar',1])
+		sublist.append(['Entregar',2])
+		tamanho_sublist=len(sublist)
+		for i in range(tamanho_sublist):
+			self.reg1.registrar(sublist[i]) 
+		self.wait(10)            
         
 	def action(self):
 		sublist=[]
-		sublist = self.reg1.procurar('0')
+		nomeServ=[]
+		sublist = self.reg1.procurar(0)
 		print(self.reg1.posicao)
+		print('FLAG 1')
 		print(sublist)
+		print('FLAG 2')
+        
 		if len(sublist)!=0:
-			for processos in sublist:
+			tamanho_sublist=len(sublist)
+			for processos in range(tamanho_sublist):
 				print(self.reg1.posicao[processos][0])
-				self.reg1.desregistrar(self.reg1.posicao[processos][0])
-				self.reg1.atualizar()                
-			self.wait(10)
+				nomeServ.append(self.reg1.posicao[processos][0])#só botar essa função para  serviços que foram concluidos
+				#self.reg1.desregistrar(self.reg1.posicao[processos][0])#problema aqui
+				print(self.reg1.posicao[processos][0])
+				print('FLAG 3')
+				self.wait(10)
 		else:
 			print('vazio')
-			self.wait(10)
-		self.reg1.atualizar()
+			self.reg1.atualizar()
+            
+		if len(nomeServ)!=0:
+			tamanho_nomeServ=len(nomeServ)
+			for servicos in range(tamanho_nomeServ):
+				self.reg1.desregistrar(nomeServ[servicos])
+            
         
 
 if __name__ == '__main__':
