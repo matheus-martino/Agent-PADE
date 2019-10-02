@@ -61,51 +61,50 @@ class maquina1(CyclicBehaviour):
 		        else:
             
 		    	    reply = message.create_reply()
-		        	reply.set_performative(ACLMessage.REJECT)
-		        	reply.set_content('Servico invalido')                
-		        	self.agent.send(reply)
+		    	    reply.set_performative(ACLMessage.REJECT)
+		    	    reply.set_content('Servico invalido')                
+		    	    self.agent.send(reply)
                 
-		if accept.filter(message):
+		if accept.filter(message):     
+			if message.content == 'Dispensar Chassi':
             
-            if message.content == 'Dispensar Chassi':
-            
-		        self.estado = 1            
-		        agente = []
-		        agente.append(message.sender.getLocalName())
-		        agente.append(message.content)
+				self.estado = 1            
+				agente = []
+				agente.append(message.sender.getLocalName())
+				agente.append(message.content)
             #momento de aguardar o inform do transportador
-		        display(self.agent, 'Dispensando Chassi')
+				display(self.agent, 'Dispensando Chassi')
             #momento de usar a Thread, devido o self.read() travar o programa
-		        t = threading.Thread(target=tAuxiliar, args=(lambda : killEvent, ))
-		        t.start()
+				t = threading.Thread(target=tAuxiliar, args=(lambda : killEvent, ))
+				t.start()
                 
-		        self.wait(10)
+				self.wait(10)
                 
-		        killEvent = True
-		        t.join()
+				killEvent = True
+				t.join()
                 
-		        display(self.agent, 'Dispensado')     
+				display(self.agent, 'Dispensado')     
             
-		        reply = message.create_reply()
-		        reply.set_performative(ACLMessage.INFORM)
-		        reply.set_content('pronto')
-		        self.agent.send(reply)
+				reply = message.create_reply()
+				reply.set_performative(ACLMessage.INFORM)
+				reply.set_content('pronto')
+				self.agent.send(reply)
                 
-		        self.estado = self.negociando
+				self.estado = self.negociando
                 
-	def tAuxiliar(self, kill):
-        
-        while True:         
-            message = self.read(False)
-            print('Thread executando')
-            if kill():
-		        break
-            if message is not None:      
-        
-		        reply = message.create_reply()
-		        reply.set_performative(ACLMessage.REJECT)
-		        reply.set_content('OCUPADO')
-		        self.agent.send(reply)
+	def tAuxiliar(self, kill):        
+		while True:         
+			message = self.read(False)
+			print('Thread executando')
+            
+			if kill():
+				break
+                
+			if message is not None:      
+				reply = message.create_reply()
+				reply.set_performative(ACLMessage.REJECT)
+				reply.set_content('OCUPADO')
+				self.agent.send(reply)
 
 if __name__ == '__main__':
 
