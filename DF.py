@@ -4,13 +4,6 @@ from pade.acl.filters import Filter
 from pade.behaviours.types import CyclicBehaviour, OneShotBehaviour
 from pade.core.agent import Agent
 from pade.misc.utility import display_message, start_loop
-from GetIP import get_ip
-
-class Directory(Agent):
-	def setup(self):
-		# Adding behaviours to this agent
-		reg1 = Registro()
-		self.add_behaviour(Dfacility(self, reg1)) 
 
 class Registro:
 	def __init__(self):
@@ -42,6 +35,14 @@ class Registro:
 				print(self.kill)                
 		if self.kill is not None:		
 			del self.posicao[self.kill]        
+      
+
+class Directory(Agent):
+	def setup(self):
+		# Adding behaviours to this agent
+		reg1 = Registro()
+		self.add_behaviour(Dfacility(self, reg1))       
+
 
 class Dfacility(CyclicBehaviour):
 	def __init__(self, agent, reg1):
@@ -81,25 +82,34 @@ class Dfacility(CyclicBehaviour):
 				#print(resultado)
                 
 		if m.filter(message):       
+			print('procurando: ')
+			print(message.content)
 			sublist = self.reg1.procurar(message.content)
 			outralista=[]
             
 			for maquinas in sublist:
 				outralista.append(self.reg1.posicao[maquinas][0] + ':')
 
-			s = ''.join(outralista)
-			
+
+			s = ''.join(outralista)	
 			print(s)
             
-			reply = message.create_reply()
-			reply.set_performative(ACLMessage.INFORM_IF)
-			reply.set_content(s)
-            
+			if s != '':          
+				reply = message.create_reply()
+				reply.set_performative(ACLMessage.INFORM_IF)
+				reply.set_content(s)
+				self.agent.send(reply)
+				print('Mensagem enviada para '+message.sender.getLocalName())
+                
+			else:				
+				reply = message.create_reply()
+				reply.set_performative(ACLMessage.INFORM_IF)
+				reply.set_content(None)
+				self.agent.send(reply)            
+				print('Serviço inexistente no DF '+message.sender.getLocalName())
+                
 if __name__ == '__main__':
+    
     agents = list()
-	
-	# Encontra o IP automaticamente
-    localIP = get_ip()
-    agents.append(Directory('DF@' + localIP + ':2000'))
-	
+    agents.append(Directory('DF'))
     start_loop(agents)
