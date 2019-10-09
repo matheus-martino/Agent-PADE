@@ -76,6 +76,9 @@ class Peca(CyclicBehaviour):
 		if len(sublist)!=0:
 			tamanho_sublist=len(sublist)
 			for processos in range(tamanho_sublist):
+                
+				custo=[]
+				outralista=[]
 				display(self.agent, 'Iniciado comunicação com o DF')
 				message = ACLMessage(ACLMessage.REQUEST)
 				message.add_receiver(AID('DF'))
@@ -85,8 +88,28 @@ class Peca(CyclicBehaviour):
                 
 				message = self.read_timeout(15)
                 
-				display(self.agent, message.content)
+				if message.content is not None:
+					outralista = message.content.split(':') 
+					del outralista[-1]
+                
+					display(self.agent, outralista)
+                    
+					for i in range(len(outralista)):
+                        
+						display(self.agent, 'Enviando CFP para ' + outralista[i])
+						message = ACLMessage(ACLMessage.CFP)
+						message.add_receiver(AID(outralista[i]))
+						message.set_content(self.reg1.posicao[processos][0])
+						self.agent.send(message)
+                        
+						message = self.read_timeout(5)
+						display(self.agent, 'Recebido --> ' + message.content)
+                        
+							if custo is not None:
+								if custo[1]<int(message.content):#continuar aqui(falta fazer o armazenamento da maq + custo no lista, e depois o else, se a lista não tiver nada ainda)	
+						
 				#print(self.reg1.posicao[processos][0])
+				
 				nomeServ.append(self.reg1.posicao[processos][0])#só botar essa função para  serviços que foram concluidos
 				print(self.reg1.posicao[processos][0])
 				print('FLAG 3')
@@ -94,18 +117,18 @@ class Peca(CyclicBehaviour):
 		else:
 			print('vazio')
 			self.reg1.atualizar()
-			#self.done() usar esta função quando for terminar o agente
+			#######self.done() usar esta função quando for terminar o agente
             
 		if len(nomeServ)!=0:
 			tamanho_nomeServ=len(nomeServ)
 			for servicos in range(tamanho_nomeServ):
 				self.reg1.desregistrar(nomeServ[servicos])
                 
-	def done(self):
-		return True
+	#def done(self):
+	#	return True
         
-	def on_end(self):
-		display(self.agent, 'Final.')
+	#def on_end(self):
+	#	display(self.agent, 'Final.')
 
 if __name__ == '__main__':
 
